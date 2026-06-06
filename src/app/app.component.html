@@ -1,0 +1,75 @@
+<div class="tetris-container">
+  <div class="game-wrapper">
+    <div class="sidebar left-sidebar">
+      <div class="info-panel">
+        <h2>Next Piece</h2>
+        <div class="next-piece-preview">
+          <!-- Placeholder for next piece preview -->
+          <div class="placeholder">Coming Next</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="game-board-container">
+      <div class="game-board">
+        <div class="board-grid">
+          <div
+            *ngFor="let row of board; let y = index"
+            class="row"
+          >
+            <div
+              *ngFor="let cell of row; let x = index"
+              class="cell"
+              [style.background-color]="getBackgroundColor(cell)"
+            ></div>
+          </div>
+        </div>
+      </div>
+
+      <div *ngIf="gameOver" class="game-over-overlay">
+        <div class="game-over-content">
+          <h1>Game Over!</h1>
+          <p class="final-score">Final Score: {{ score }}</p>
+          <button (click)="resetGame()" class="reset-button">Play Again</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="sidebar right-sidebar">
+      <div class="stats-panel">
+        <div class="stat">
+          <label>Score</label>
+          <div class="stat-value">{{ score }}</div>
+        </div>
+        <div class="stat">
+          <label>Level</label>
+          <div class="stat-value">{{ level }}</div>
+        </div>
+        <div class="stat">
+          <label>Lines</label>
+          <div class="stat-value">{{ lines }}</div>
+        </div>
+      </div>
+
+      <div class="controls-panel">
+        <h3>Controls</h3>
+        <div class="control-item">
+          <kbd>←</kbd> / <kbd>→</kbd>
+          <span>Move</span>
+        </div>
+        <div class="control-item">
+          <kbd>↑</kbd>
+          <span>Rotate</span>
+        </div>
+        <div class="control-item">
+          <kbd>↓</kbd>
+          <span>Soft Drop</span>
+        </div>
+        <div class="control-item">
+          <kbd>Space</kbd>
+          <span>Hard Drop</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
