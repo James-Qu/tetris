@@ -1,5 +1,5 @@
 import { Component, OnInit, OnDestroy, HostListener } from '@angular/core';
-import { TetrisService } from './tetris.service';
+import { TetrisService, Piece } from './tetris.service';
 import { Subscription, interval } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
 
@@ -20,6 +20,7 @@ export class AppComponent implements OnInit, OnDestroy {
   gameOver = false;
   gameActive = false;
   isPaused = false;
+  nextPiece: Piece | null = null;
 
   private gameTickSubscription: Subscription | null = null;
   private boardSubscription: Subscription | null = null;
@@ -28,6 +29,7 @@ export class AppComponent implements OnInit, OnDestroy {
   private linesSubscription: Subscription | null = null;
   private gameOverSubscription: Subscription | null = null;
   private speedSubscription: Subscription | null = null;
+  private nextPieceSubscription: Subscription | null = null;
 
   readonly CELL_COLORS = [
     '#1a1a2e', // empty (dark background)
@@ -67,6 +69,10 @@ export class AppComponent implements OnInit, OnDestroy {
       }
     });
 
+    this.nextPieceSubscription = this.tetrisService.nextPiece$.subscribe(piece => {
+      this.nextPiece = piece;
+    });
+
     this.startGame();
   }
 
@@ -78,6 +84,7 @@ export class AppComponent implements OnInit, OnDestroy {
     this.linesSubscription?.unsubscribe();
     this.gameOverSubscription?.unsubscribe();
     this.speedSubscription?.unsubscribe();
+    this.nextPieceSubscription?.unsubscribe();
   }
 
   startGame(): void {
@@ -165,6 +172,19 @@ export class AppComponent implements OnInit, OnDestroy {
 
   getBackgroundColor(colorIndex: number): string {
     return this.CELL_COLORS[colorIndex];
+  }
+
+  getColorIndex(color: string): number {
+    switch (color) {
+      case '#ffa502': return 1;
+      case '#00d2d3': return 2;
+      case '#ff6b6b': return 3;
+      case '#4ecdc4': return 4;
+      case '#f7b731': return 5;
+      case '#45b7d1': return 6;
+      case '#5f27cd': return 7;
+      default: return 8;
+    }
   }
 
   resetGame(): void {

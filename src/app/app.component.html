@@ -4,8 +4,19 @@
       <div class="info-panel">
         <h2>Next Piece</h2>
         <div class="next-piece-preview">
-          <!-- Placeholder for next piece preview -->
-          <div class="placeholder">Coming Next</div>
+          <div *ngIf="nextPiece" class="preview-grid">
+            <div
+              *ngFor="let row of nextPiece.shape; let y = index"
+              class="preview-row"
+            >
+              <div
+                *ngFor="let cell of row; let x = index"
+                class="preview-cell"
+                [style.background-color]="getBackgroundColor(getColorIndex(nextPiece.color))"
+                [style.visibility]="cell ? 'visible' : 'hidden'"
+              ></div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
