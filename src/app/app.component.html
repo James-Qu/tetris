@@ -1,5 +1,23 @@
 <div class="tetris-container">
   <div class="game-wrapper">
+
+    <!-- Compact mobile header (score bar) -->
+    <div class="mobile-header">
+      <div class="mobile-stat">
+        <span class="mobile-stat-label">Score</span>
+        <span class="mobile-stat-value">{{ score }}</span>
+      </div>
+      <div class="mobile-stat">
+        <span class="mobile-stat-label">Level</span>
+        <span class="mobile-stat-value">{{ level }}</span>
+      </div>
+      <div class="mobile-stat">
+        <span class="mobile-stat-label">Lines</span>
+        <span class="mobile-stat-value">{{ lines }}</span>
+      </div>
+    </div>
+
+    <!-- Desktop left sidebar -->
     <div class="sidebar left-sidebar">
       <div class="info-panel">
         <h2>Next Piece</h2>
@@ -22,7 +40,7 @@
     </div>
 
     <div class="game-board-container">
-      <div class="game-board">
+      <div class="game-board" style="touch-action: none;">
         <div class="board-grid">
           <div
             *ngFor="let row of board; let y = index"
@@ -48,7 +66,8 @@
       <div *ngIf="isPaused" class="pause-overlay">
         <div class="pause-content">
           <h1>PAUSED</h1>
-          <p>Press <kbd>P</kbd> to resume</p>
+          <p class="pause-hint desktop-hint">Press <kbd>P</kbd> to resume</p>
+          <p class="pause-hint mobile-hint">Tap <span class="pause-icon">⏸</span> to resume</p>
         </div>
       </div>
 
@@ -60,6 +79,7 @@
       </div>
     </div>
 
+    <!-- Desktop right sidebar -->
     <div class="sidebar right-sidebar">
       <div class="stats-panel">
         <div class="stat">
@@ -100,5 +120,96 @@
         </div>
       </div>
     </div>
+
   </div>
+
+  <!-- Mobile touch controls — rendered outside game-wrapper for full-width -->
+  <div class="mobile-controls">
+    <!-- Next piece strip -->
+    <div class="mobile-next">
+      <span class="mobile-next-label">Next</span>
+      <div *ngIf="nextPiece" class="preview-grid">
+        <div *ngFor="let row of nextPiece.shape" class="preview-row">
+          <div
+            *ngFor="let cell of row"
+            class="preview-cell"
+            [style.background-color]="getBackgroundColor(getColorIndex(nextPiece.color))"
+            [style.visibility]="cell ? 'visible' : 'hidden'"
+          ></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Button grid: 3 columns × 2 rows -->
+    <div class="touch-grid">
+      <!-- Row 1: ← ↻ → -->
+      <button
+        class="touch-btn"
+        id="touch-left"
+        aria-label="Move Left"
+        (touchstart)="onTouchStart($event, 'left')"
+        (touchend)="onTouchEnd($event)"
+        (touchcancel)="onTouchEnd($event)"
+      >
+        <span class="touch-icon">←</span>
+      </button>
+
+      <button
+        class="touch-btn rotate-btn"
+        id="touch-rotate"
+        aria-label="Rotate"
+        (touchstart)="onTouchStart($event, 'rotate')"
+        (touchend)="onTouchEnd($event)"
+        (touchcancel)="onTouchEnd($event)"
+      >
+        <span class="touch-icon">↻</span>
+      </button>
+
+      <button
+        class="touch-btn"
+        id="touch-right"
+        aria-label="Move Right"
+        (touchstart)="onTouchStart($event, 'right')"
+        (touchend)="onTouchEnd($event)"
+        (touchcancel)="onTouchEnd($event)"
+      >
+        <span class="touch-icon">→</span>
+      </button>
+
+      <!-- Row 2: ↓ ⏸ ⚡ -->
+      <button
+        class="touch-btn soft-drop-btn"
+        id="touch-soft-drop"
+        aria-label="Soft Drop"
+        (touchstart)="onTouchStart($event, 'softDrop')"
+        (touchend)="onTouchEnd($event)"
+        (touchcancel)="onTouchEnd($event)"
+      >
+        <span class="touch-icon">↓</span>
+      </button>
+
+      <button
+        class="touch-btn pause-btn"
+        id="touch-pause"
+        aria-label="Pause"
+        (touchstart)="onTouchStart($event, 'pause')"
+        (touchend)="onTouchEnd($event)"
+        (touchcancel)="onTouchEnd($event)"
+      >
+        <span class="touch-icon">⏸</span>
+      </button>
+
+      <button
+        class="touch-btn hard-drop-btn"
+        id="touch-hard-drop"
+        aria-label="Hard Drop"
+        (touchstart)="onTouchStart($event, 'hardDrop')"
+        (touchend)="onTouchEnd($event)"
+        (touchcancel)="onTouchEnd($event)"
+      >
+        <span class="touch-icon">⚡</span>
+      </button>
+    </div>
+  </div>
+
 </div>

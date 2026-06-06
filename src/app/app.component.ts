@@ -24,6 +24,10 @@ export class AppComponent implements OnInit, OnDestroy {
   activeEffect: LineClearEvent | null = null;
   private effectTimeout: any = null;
 
+  // Touch control state
+  private repeatInitialTimer: any = null;
+  private repeatIntervalTimer: any = null;
+
   private gameTickSubscription: Subscription | null = null;
   private boardSubscription: Subscription | null = null;
   private scoreSubscription: Subscription | null = null;
@@ -90,21 +94,6 @@ export class AppComponent implements OnInit, OnDestroy {
     });
 
     this.startGame();
-  }
-
-  ngOnDestroy(): void {
-    this.stopGameTick();
-    this.boardSubscription?.unsubscribe();
-    this.scoreSubscription?.unsubscribe();
-    this.levelSubscription?.unsubscribe();
-    this.linesSubscription?.unsubscribe();
-    this.gameOverSubscription?.unsubscribe();
-    this.speedSubscription?.unsubscribe();
-    this.nextPieceSubscription?.unsubscribe();
-    this.lineClearSubscription?.unsubscribe();
-    if (this.effectTimeout) {
-      clearTimeout(this.effectTimeout);
-    }
   }
 
   startGame(): void {
@@ -190,6 +179,58 @@ export class AppComponent implements OnInit, OnDestroy {
     this.isPaused = !this.isPaused;
   }
 
+  // ── Touch Controls ───────────────────────────────────────────────────────────
+
+  private vibrate(): void {
+    if ('vibrate' in navigator) {
+      navigator.vibrate(18);
+    }
+  }
+
+  private executeAction(action: string): void {
+    if (!this.gameActive || this.gameOver) return;
+    switch (action) {
+      case 'left':      if (!this.isPaused) { this.tetrisService.movePieceLeft(); }  break;
+      case 'right':     if (!this.isPaused) { this.tetrisService.movePieceRight(); } break;
+      case 'rotate':    if (!this.isPaused) { this.tetrisService.rotatePieceClockwise(); } break;
+      case 'softDrop':  if (!this.isPaused) { this.tetrisService.tick(); }           break;
+      case 'hardDrop':  if (!this.isPaused) { this.tetrisService.dropPiece(); }      break;
+      case 'pause':     this.togglePause();                                           break;
+    }
+  }
+
+  onTouchStart(event: TouchEvent, action: string): void {
+    event.preventDefault();
+    this.vibrate();
+    this.cancelRepeat();
+    this.executeAction(action);
+
+    // Auto-repeat only for directional moves
+    if (action === 'left' || action === 'right') {
+      this.repeatInitialTimer = setTimeout(() => {
+        this.repeatIntervalTimer = setInterval(() => {
+          this.executeAction(action);
+        }, 80);
+      }, 250);
+    }
+  }
+
+  onTouchEnd(event: TouchEvent): void {
+    event.preventDefault();
+    this.cancelRepeat();
+  }
+
+  private cancelRepeat(): void {
+    if (this.repeatInitialTimer !== null) {
+      clearTimeout(this.repeatInitialTimer);
+      this.repeatInitialTimer = null;
+    }
+    if (this.repeatIntervalTimer !== null) {
+      clearInterval(this.repeatIntervalTimer);
+      this.repeatIntervalTimer = null;
+    }
+  }
+
   getBackgroundColor(colorIndex: number): string {
     return this.CELL_COLORS[colorIndex];
   }
@@ -210,5 +251,21 @@ export class AppComponent implements OnInit, OnDestroy {
   resetGame(): void {
     this.gameOver = false;
     this.startGame();
+  }
+
+  ngOnDestroy(): void {
+    this.stopGameTick();
+    this.boardSubscription?.unsubscribe();
+    this.scoreSubscription?.unsubscribe();
+    this.levelSubscription?.unsubscribe();
+    this.linesSubscription?.unsubscribe();
+    this.gameOverSubscription?.unsubscribe();
+    this.speedSubscription?.unsubscribe();
+    this.nextPieceSubscription?.unsubscribe();
+    this.lineClearSubscription?.unsubscribe();
+    if (this.effectTimeout) {
+      clearTimeout(this.effectTimeout);
+    }
+    this.cancelRepeat();
   }
 }
