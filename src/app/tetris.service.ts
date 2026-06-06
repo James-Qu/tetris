@@ -256,10 +256,10 @@ export class TetrisService {
       const points = [40, 100, 300, 1200][linesCleared - 1] * this.level;
       this.score += points;
 
-      this.levelSubject.next(Math.floor(this.linesCleared / 10) + 1);
-      this.level = Math.floor(this.linesCleared / 10) + 1;
-      this.gameSpeed = Math.max(100, 1000 - (this.level - 1) * 50);
+      this.level = Math.floor((1 + Math.sqrt(1 + this.score / 125)) / 2);
+      this.gameSpeed = Math.max(100, Math.floor(1000 * Math.pow(0.8, this.level - 1)));
 
+      this.levelSubject.next(this.level);
       this.scoreSubject.next(this.score);
       this.linesSubject.next(this.linesCleared);
     }
