@@ -86,15 +86,7 @@ export class AppComponent implements OnInit, OnDestroy {
   }
 
   private startGameTick(): void {
-    this.speedSubscription = this.tetrisService.getGameSpeed = this.tetrisService.getGameSpeed.bind(this.tetrisService);
-    const speed$ = interval(this.tetrisService.getGameSpeed()).pipe(
-      switchMap(() => {
-        const currentSpeed = this.tetrisService.getGameSpeed();
-        return interval(currentSpeed);
-      })
-    );
-
-    // Simpler approach - use a fixed interval that checks current speed
+    // Use a fixed interval that checks current speed
     this.gameTickSubscription = interval(50).subscribe(() => {
       if (this.tetrisService.isGameActive()) {
         // Call tick at the appropriate speed
