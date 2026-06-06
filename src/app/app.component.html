@@ -51,6 +51,13 @@
           <p>Press <kbd>P</kbd> to resume</p>
         </div>
       </div>
+
+      <div *ngIf="activeEffect" class="effect-overlay" [class]="activeEffect.type">
+        <div class="effect-content">
+          <h2 class="effect-title">{{ activeEffect.type | uppercase }}</h2>
+          <div class="effect-points">+{{ activeEffect.points }}</div>
+        </div>
+      </div>
     </div>
 
     <div class="sidebar right-sidebar">

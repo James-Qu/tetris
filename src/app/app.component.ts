@@ -1,5 +1,5 @@
 import { Component, OnInit, OnDestroy, HostListener } from '@angular/core';
-import { TetrisService, Piece } from './tetris.service';
+import { TetrisService, Piece, LineClearEvent } from './tetris.service';
 import { Subscription, interval } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
 
@@ -21,6 +21,8 @@ export class AppComponent implements OnInit, OnDestroy {
   gameActive = false;
   isPaused = false;
   nextPiece: Piece | null = null;
+  activeEffect: LineClearEvent | null = null;
+  private effectTimeout: any = null;
 
   private gameTickSubscription: Subscription | null = null;
   private boardSubscription: Subscription | null = null;
@@ -30,6 +32,7 @@ export class AppComponent implements OnInit, OnDestroy {
   private gameOverSubscription: Subscription | null = null;
   private speedSubscription: Subscription | null = null;
   private nextPieceSubscription: Subscription | null = null;
+  private lineClearSubscription: Subscription | null = null;
 
   readonly CELL_COLORS = [
     '#1a1a2e', // empty (dark background)
@@ -73,6 +76,19 @@ export class AppComponent implements OnInit, OnDestroy {
       this.nextPiece = piece;
     });
 
+    this.lineClearSubscription = this.tetrisService.lineClearEffect$.subscribe(effect => {
+      if (effect.type === 'single') return;
+
+      if (this.effectTimeout) {
+        clearTimeout(this.effectTimeout);
+        this.effectTimeout = null;
+      }
+      this.activeEffect = effect;
+      this.effectTimeout = setTimeout(() => {
+        this.activeEffect = null;
+      }, 1000);
+    });
+
     this.startGame();
   }
 
@@ -85,6 +101,10 @@ export class AppComponent implements OnInit, OnDestroy {
     this.gameOverSubscription?.unsubscribe();
     this.speedSubscription?.unsubscribe();
     this.nextPieceSubscription?.unsubscribe();
+    this.lineClearSubscription?.unsubscribe();
+    if (this.effectTimeout) {
+      clearTimeout(this.effectTimeout);
+    }
   }
 
   startGame(): void {

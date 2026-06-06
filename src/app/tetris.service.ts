@@ -1,11 +1,17 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, interval } from 'rxjs';
+import { BehaviorSubject, Observable, interval, Subject } from 'rxjs';
 
 export interface Piece {
   shape: number[][];
   x: number;
   y: number;
   color: string;
+}
+
+export interface LineClearEvent {
+  type: 'single' | 'double' | 'triple' | 'tetris';
+  points: number;
+  lines: number;
 }
 
 type Board = number[][];
@@ -53,6 +59,7 @@ export class TetrisService {
   private linesSubject = new BehaviorSubject<number>(0);
   private gameOverSubject = new BehaviorSubject<boolean>(false);
   private nextPieceSubject = new BehaviorSubject<Piece | null>(null);
+  private lineClearEffectSubject = new Subject<LineClearEvent>();
 
   board$ = this.boardSubject.asObservable();
   score$ = this.scoreSubject.asObservable();
@@ -60,6 +67,7 @@ export class TetrisService {
   lines$ = this.linesSubject.asObservable();
   gameOver$ = this.gameOverSubject.asObservable();
   nextPiece$ = this.nextPieceSubject.asObservable();
+  lineClearEffect$ = this.lineClearEffectSubject.asObservable();
 
   constructor() {
     this.initBoard();
@@ -262,6 +270,14 @@ export class TetrisService {
       this.levelSubject.next(this.level);
       this.scoreSubject.next(this.score);
       this.linesSubject.next(this.linesCleared);
+
+      const types: ('single' | 'double' | 'triple' | 'tetris')[] = ['single', 'double', 'triple', 'tetris'];
+      const type = types[linesCleared - 1] || 'single';
+      this.lineClearEffectSubject.next({
+        type,
+        points,
+        lines: linesCleared
+      });
     }
   }
 
