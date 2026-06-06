@@ -19,6 +19,7 @@ export class AppComponent implements OnInit, OnDestroy {
   lines = 0;
   gameOver = false;
   gameActive = false;
+  isPaused = false;
 
   private gameTickSubscription: Subscription | null = null;
   private boardSubscription: Subscription | null = null;
@@ -88,7 +89,7 @@ export class AppComponent implements OnInit, OnDestroy {
   private startGameTick(): void {
     // Use a fixed interval that checks current speed
     this.gameTickSubscription = interval(50).subscribe(() => {
-      if (this.tetrisService.isGameActive()) {
+      if (this.tetrisService.isGameActive() && !this.isPaused) {
         // Call tick at the appropriate speed
         const speed = this.tetrisService.getGameSpeed();
         if (this.lastTickTime === undefined) {
@@ -120,28 +121,46 @@ export class AppComponent implements OnInit, OnDestroy {
   handleKeyboardEvent(event: KeyboardEvent): void {
     if (!this.gameActive) return;
 
-    switch (event.key) {
-      case 'ArrowLeft':
+    switch (event.key.toLowerCase()) {
+      case 'arrowleft':
         event.preventDefault();
-        this.tetrisService.movePieceLeft();
+        if (!this.isPaused) {
+          this.tetrisService.movePieceLeft();
+        }
         break;
-      case 'ArrowRight':
+      case 'arrowright':
         event.preventDefault();
-        this.tetrisService.movePieceRight();
+        if (!this.isPaused) {
+          this.tetrisService.movePieceRight();
+        }
         break;
-      case 'ArrowUp':
+      case 'arrowup':
         event.preventDefault();
-        this.tetrisService.rotatePieceClockwise();
+        if (!this.isPaused) {
+          this.tetrisService.rotatePieceClockwise();
+        }
         break;
-      case 'ArrowDown':
+      case 'arrowdown':
         event.preventDefault();
-        this.tetrisService.tick();
+        if (!this.isPaused) {
+          this.tetrisService.tick();
+        }
         break;
       case ' ':
         event.preventDefault();
-        this.tetrisService.dropPiece();
+        if (!this.isPaused) {
+          this.tetrisService.dropPiece();
+        }
+        break;
+      case 'p':
+        event.preventDefault();
+        this.togglePause();
         break;
     }
+  }
+
+  togglePause(): void {
+    this.isPaused = !this.isPaused;
   }
 
   getBackgroundColor(colorIndex: number): string {

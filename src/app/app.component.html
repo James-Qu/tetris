@@ -33,6 +33,13 @@
           <button (click)="resetGame()" class="reset-button">Play Again</button>
         </div>
       </div>
+
+      <div *ngIf="isPaused" class="pause-overlay">
+        <div class="pause-content">
+          <h1>PAUSED</h1>
+          <p>Press <kbd>P</kbd> to resume</p>
+        </div>
+      </div>
     </div>
 
     <div class="sidebar right-sidebar">
@@ -68,6 +75,10 @@
         <div class="control-item">
           <kbd>Space</kbd>
           <span>Hard Drop</span>
+        </div>
+        <div class="control-item">
+          <kbd>P</kbd>
+          <span>Pause/Resume</span>
         </div>
       </div>
     </div>

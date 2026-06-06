@@ -131,6 +131,47 @@
   }
 }
 
+.pause-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 8px;
+  backdrop-filter: blur(4px);
+}
+
+.pause-content {
+  text-align: center;
+  color: white;
+  z-index: 10;
+
+  h1 {
+    font-size: 48px;
+    margin-bottom: 20px;
+    color: #45b7d1;
+    text-shadow: 0 0 10px rgba(69, 183, 209, 0.5);
+  }
+
+  p {
+    font-size: 18px;
+    color: #c0c0c0;
+
+    kbd {
+      background: rgba(255, 255, 255, 0.1);
+      padding: 4px 8px;
+      border-radius: 4px;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      font-weight: bold;
+      color: #45b7d1;
+    }
+  }
+}
+
 .info-panel {
   background: rgba(255, 255, 255, 0.08);
   padding: 15px;
