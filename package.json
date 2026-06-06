@@ -7,7 +7,9 @@
     "start": "ng serve",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
-    "test": "ng test"
+    "test": "ng test",
+    "build-prod": "npx ng build --configuration=production --base-href=/tetris/",
+    "deploy-gh-page": "npx angular-cli-ghpages --dir=dist/angular-tetris"
   },
   "private": true,
   "dependencies": {
